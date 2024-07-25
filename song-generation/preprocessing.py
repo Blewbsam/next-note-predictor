@@ -19,6 +19,7 @@ TRAIN_TEST_SPLIT = 0.8
 
 # TESTING_MIDI_PATH = os.path.join("data","mozart-sonata.mid")
 TESTING_MIDI_PATH = os.path.join("data","EtudeChopin.mid")
+DATASET_PATH = None
 
 
 print(TESTING_MIDI_PATH)
@@ -28,10 +29,34 @@ class Preprocessing:
   train_y = []
 
 
-  def convertFromDataset():
-    return NotImplementedError
+  def convertFromMidiDataset(num_songs):
+    ## returns  array of type MadeNote from midi file
+    ## MadeNote is tuple with pitch: int and duration: float
+    song_count = 0
 
-  def convertSampleMIDI(self,midi_path):
+    madeNoteArray = []
+    for dir in os.listdir(DATASET_PATH):
+      current_folder_path = os.path.join(DATASET_PATH,dir)
+      if os.path.isdir(current_folder_path):
+        if song_count > num_songs:
+          break
+        print(f"Loading {dir}.")
+        for midi_path in os.listdir(current_folder_path):
+          mz = pretty_midi.PrettyMIDI(os.path.join(current_folder_path,midi_path))
+          piano_track = mz.instruments[0]
+          sorted_track = sorted(piano_track.notes, key= lambda note: note.start)
+          # print(sorted_track[:10])
+          for note in sorted_track:
+              newNote = (note.pitch,note.end - note.start)
+              madeNoteArray.append(newNote)
+          for _ in range(SEQUENCE_LENGTH - 1):
+            madeNoteArray.append((0,0))
+          song_count += 1
+
+
+
+    return madeNoteArray
+  def convertFromMidiPath(self,midi_path):
     ## returns  array of type MadeNote from midi file
     ## MadeNote is tuple with pitch: int and duration: float
     mz = pretty_midi.PrettyMIDI(midi_path)
@@ -128,12 +153,18 @@ class Preprocessing:
 
 
 
-  def getData(self):
-    print("here")
-    noteArray = self.convertMidi(TESTING_MIDI_PATH) # MIDI path used for dev
+  def setData(self,num_songs,midi_path=None):
+    if midi_path is None:
+      self.noteArray = self.convertFromMidiDataset(DATASET_PATH,num_songs)
+    else:
+      self.noteArray = self.convertFromMidiPath(midi_path) # MIDI path used for dev
     print("Got data")
-    self.createTraining(noteArray)
+    self.createTraining(self.noteArray)
     self.transformIndexing()
+
+  def getData(self):
+    # setData must be called before getData.
+    # self.createTraining(self.noteArray)
+    # self.transformIndexing()
     self.shufflePitchesandSplit()
     return self.train_x, self.train_y, self.test_x,self.test_y
-     

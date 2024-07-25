@@ -48,10 +48,9 @@ class Model:
         logits = h2 @ self.W3 + self.b3
         return logits
 
-    def trainModel(self, epochs):
+    def trainModel(self, preprocessor, epochs: int):
 
-        PreProcessing = Preprocessing()
-        pitches_train_x, pitches_train_y, pitches_test_x, pitches_test_y = PreProcessing.getData()
+        pitches_train_x, pitches_train_y, pitches_test_x, pitches_test_y = preprocessor.getData()
         assert len(pitches_train_x) == len(pitches_train_y) and len(pitches_test_x == len(pitches_test_y))
         print(f"{len(pitches_train_x)} training data.")
         print(f"{len(pitches_test_x)} validation data.")
