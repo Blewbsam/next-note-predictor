@@ -30,7 +30,11 @@ class Model:
 
         self.W3 = torch.randn((80,NUM_PITCHES),requires_grad=True)
         self.b3 = torch.randn(NUM_PITCHES,requires_grad=True)
-        self.parameters = [self.C,self.W1,self.b1,self.bnGain1,self.bnBias1,self.W2,self.b2,self.bnGain2, self.bnBias2,self.W3,self.b3]
+        self.bnGain3 = torch.ones((1,89),requires_grad=True) # added.
+        self.bnBias3 = torch.zeros((1,89),requires_grad=True) # added.
+
+
+        self.parameters = [self.C,self.W1,self.b1,self.bnGain1,self.bnBias1,self.W2,self.b2,self.bnGain2, self.bnBias2,self.W3,self.b3,self.bnGain3, self.bnBias3]
 
 
         for p in self.parameters: ## Not sure if this is necessary.
@@ -45,7 +49,9 @@ class Model:
         Linear2 = h1 @ self.W2 + self.b2
         BatchNorm2 = self.bnGain2 * ((Linear2 - Linear2.mean(0,keepdim=True)) / Linear2.std(0,keepdim=True)) +  self.bnBias2
         h2 = torch.tanh(BatchNorm2)
-        logits = h2 @ self.W3 + self.b3
+        Linear3 = h2 @ self.W3 + self.b3  
+        BatchNorm3 = self.bnGain3 * ((Linear3 - Linear3.mean(0,keepdim=True))) / Linear3.std(0,keepdim=True) + self.bnBias3 
+        logits = BatchNorm3
         return logits
 
     def trainModel(self, preprocessor, epochs: int):
@@ -105,8 +111,4 @@ class Model:
         plt.plot(loss)
         plt.xlabel("Batch")
         plt.ylabel(label)
-
         plt.show()
-
-        
-    

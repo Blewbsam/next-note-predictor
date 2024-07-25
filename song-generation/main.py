@@ -10,7 +10,7 @@ def main():
     preprocessor = Preprocessing()
     preprocessor.setData(num_songs=0,midi_path=CHOPIN_DATA)
     engine.setUpParameters()
-    engine.trainModel(preprocessor,epochs=40)
+    engine.trainModel(preprocessor,epochs=100)
 
 
 if __name__ == "__main__":
