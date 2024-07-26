@@ -103,12 +103,15 @@ class Model:
         print("Best training loss: ",min(train_losses) )
         print("Best validation loss: ", min(val_losses))
 
-        self.plotLossCurve(train_losses,"Training loss")
-        self.plotLossCurve(val_losses,"Validation loss")
+        self.plotTrainingValidationLossCurve(train_losses,"Training loss",val_losses,"Validation loss")
 
-    def plotLossCurve(self,loss,label):
-
-        plt.plot(loss)
+    def plotTrainingValidationLossCurve(self,train_loss,train_label,test_loss,test_label):
+        plt.subplot(1,2,1)
+        plt.plot(train_loss)
         plt.xlabel("Batch")
-        plt.ylabel(label)
+        plt.ylabel(train_label)
+        plt.subplot(1,2,2)
+        plt.plot(test_loss)
+        plt.ylabel(test_label)
+        plt.xlabel("Batch")
         plt.show()
