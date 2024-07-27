@@ -4,6 +4,7 @@
 import pretty_midi
 from random import randint
 import torch
+from torch.nn import functional
 import os
 import math 
 from sklearn import utils
@@ -155,21 +156,12 @@ class Preprocessing:
   def binaryVectorization(self,data):
     # takes data of shape (n,SEQUENCE_LENGTH) 
     # and makes binary vectorized representaiton of shape (0,8,)
+    one_hot_encoded = functional.one_hot(data.long(),num_classes = NUM_PITCHES)
+    print("One hot encoded vector has dimensions: ", one_hot_encoded.shape)
+    return one_hot_encoded
 
-    assert data.ndim == 2
 
-    binary_pitches = torch.empty(0,SEQUENCE_LENGTH,89)
-    for row in data:
-      current_row = torch.empty(0,0,NUM_PITCHES)
-      # current_row = []
-      for note in row:
-        curBinaryNote = torch.zeros((0,1,NUM_PITCHES))
-        index = note.int().item()
-        if (index != 0):
-          curBinaryNote[:,:,index] = 1
-        current_row = torch.cat((current_row,curBinaryNote),dim=1)
-      binary_pitches = torch.cat((binary_pitches,current_row),dim=2)
-    
+
 
 
 
