@@ -98,12 +98,9 @@ class Preprocessing:
     
       X.append(new_x)
       Y.append(new_y)
-      
-    self.X = torch.tensor(X)
-    self.Y = torch.tensor(Y)
+    
 
-    print(len(X))
-    print(len(Y))
+    return torch.tensor(X),torch.tensor(Y)
 
 
 
@@ -114,25 +111,26 @@ class Preprocessing:
     print(f"{X[i]} sequence \n is followed by \n {Y[i]}")
 
 
-  def transformIndexing(self):
+  def transformIndexing(self,X,Y):
     # pitch embedding
-    assert len(self.X) != 0 and len(self.Y) != 0
+    assert len(X) != 0 and len(Y) != 0
 
-    print("Training data shape:: ", self.X.shape)
-    self.pitches_X = self.X[:,:,0]
-    time_train_x = self.X[:,:,1]
-    self.pitches_Y = self.Y[:,0]
-    time_train_y = self.Y[:,1]
+    print("Training data shape:: ", X.shape)
+    pitches_X = X[:,:,0]
+    time_train_x = X[:,:,1]
+    pitches_Y = Y[:,0]
+    time_train_y = Y[:,1]
 
-    assert (self.pitches_X.size()[0] == self.pitches_Y.size()[0])
-
+    assert (pitches_X.size()[0] == pitches_Y.size()[0])
      #making pitches ready for indexing for embedding
-    for i in range(len(self.pitches_X)):
+    for i in range(len(pitches_X)):
       for j in range(SEQUENCE_LENGTH):
-        current_pitch_x = self.pitches_X[i,j]
-        self.pitches_X[i,j] = current_pitch_x - 20 if current_pitch_x != 0 else 0
-      current_pitch_y =  self.pitches_Y[i]
-      self.pitches_Y[i] = current_pitch_y - 20 if current_pitch_y != 0 else 0
+        current_pitch_x = pitches_X[i,j]
+        pitches_X[i,j] = current_pitch_x - 20 if current_pitch_x != 0 else 0
+      current_pitch_y =  pitches_Y[i]
+      pitches_Y[i] = current_pitch_y - 20 if current_pitch_y != 0 else 0
+    return pitches_X, pitches_Y
+
 
 
 
@@ -160,24 +158,24 @@ class Preprocessing:
     print("One hot encoded vector has dimensions: ", one_hot_encoded.shape)
     return one_hot_encoded
 
-
-
-
-
-
-
   def setData(self,num_songs,midi_path=None):
     if midi_path is None:
-      self.noteArray = self.convertFromMidiDataset(DATASET_PATH,num_songs)
+      noteArray = self.convertFromMidiDataset(DATASET_PATH,num_songs)
     else:
-      self.noteArray = self.convertFromMidiPath(midi_path) # MIDI path used for dev
-    print("Got data")
-    self.createTraining(self.noteArray)
-    self.transformIndexing()
+      noteArray = self.convertFromMidiPath(midi_path) # MIDI path used for dev
+    # Make these funcitonal
+    X,Y = self.createTraining(noteArray)
+    X,Y = self.transformIndexing(X,Y)
+    self.pitches_X = self.binaryVectorization(X)
+    self.pitches_Y = self.binaryVectorization(Y)
+
+
 
   def getData(self):
+    print(self.pitches_X.shape)
+    print(self.pitches_Y.shape)
     # setData must be called before getData.
-    # self.createTraining(self.noteArray)
+    # self.createTraining(noteArray)
     # self.transformIndexing()
     self.shufflePitchesandSplit()
     return self.train_x, self.train_y, self.test_x,self.test_y

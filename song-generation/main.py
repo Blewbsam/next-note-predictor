@@ -9,8 +9,8 @@ def main():
     engine = Model()
     preprocessor = Preprocessing()
     preprocessor.setData(num_songs=0,midi_path=CHOPIN_DATA)
-    engine.setUpParameters()
-    engine.trainModel(preprocessor,epochs=100)
+    # engine.setUpParameters()
+    # engine.trainModel(preprocessor,epochs=100)
 
 
 if __name__ == "__main__":
