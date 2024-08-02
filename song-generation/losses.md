@@ -18,3 +18,9 @@ validation loss: 4.30078458786
 ## With reactive learning rate:
 train loss: 3.70
 validation loss = 4.18
+
+
+
+## With one-hot-encoding:
+train loss = 2.079
+validation loss = 2.079

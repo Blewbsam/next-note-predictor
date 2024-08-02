@@ -23,7 +23,6 @@ TESTING_MIDI_PATH = os.path.join("data","EtudeChopin.mid")
 DATASET_PATH = None
 
 
-print(TESTING_MIDI_PATH)
 
 class Preprocessing:
   train_x = []

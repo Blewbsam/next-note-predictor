@@ -18,7 +18,7 @@ class Model:
 
     def setUpParameters(self):
         self.C = torch.randn((NUM_PITCHES,1),requires_grad=True)
-        self.W1 = torch.randn((8,100),requires_grad=True)
+        self.W1 = torch.randn((89,100),requires_grad=True)
         self.b1 = torch.randn(100,requires_grad=True)
         self.bnGain1 = torch.ones((1,100),requires_grad=True)
         self.bnBias1 = torch.zeros((1,100),requires_grad=True)
