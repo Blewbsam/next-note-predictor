@@ -9,7 +9,9 @@ def main():
     engine = Model()
     preprocessor = Preprocessing()
     preprocessor.setData(num_songs=0,midi_path=CHOPIN_DATA)
+
     engine.setUpParameters()
+    engine.countParameters()
     engine.trainModel(preprocessor,epochs=100)
 
 

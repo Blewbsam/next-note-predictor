@@ -39,6 +39,15 @@ class Model:
 
         for p in self.parameters: ## Not sure if this is necessary.
             p.requires_grad = True
+
+
+    def countParameters(self):
+        assert self.parameters
+        total_params = sum(p.numel() for p in self.parameters)
+        trainable_params = sum(p.numel() for p in self.parameters if p.requires_grad == True)
+        print(f"There are a total of {total_params} parameters, {trainable_params} of which are trainable.")
+        return total_params
+
                 
 
     def make_predictions(self,x_batch):
