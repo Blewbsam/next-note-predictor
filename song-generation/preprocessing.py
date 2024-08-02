@@ -136,18 +136,19 @@ class Preprocessing:
 
 
   
-  def shufflePitchesandSplit(self):
-    assert len(self.pitches_X) != 0 and len(self.pitches_Y) != 0
+  def shufflePitchesandSplit(self,X,Y):
+    assert len(X) != 0 and len(Y) != 0
     
-    shuffled_pitches_X,shuffled_pitches_Y = utils.shuffle(self.pitches_X,self.pitches_Y)
+    shuffled_pitches_X,shuffled_pitches_Y = utils.shuffle(X,Y)
 
-    split_index = math.floor(len(self.pitches_X) * TRAIN_TEST_SPLIT)
+    split_index = math.floor(len(X) * TRAIN_TEST_SPLIT)
 
     ## splitting training and testing data.
-    self.train_x = shuffled_pitches_X[:split_index]
-    self.train_y = shuffled_pitches_Y[:split_index]
-    self.test_x = shuffled_pitches_X[split_index:]
-    self.test_y = shuffled_pitches_Y[split_index:]
+    train_x = shuffled_pitches_X[:split_index]
+    train_y = shuffled_pitches_Y[:split_index]
+    test_x = shuffled_pitches_X[split_index:]
+    test_y = shuffled_pitches_Y[split_index:]
+    return train_x, train_y,test_x, test_y
 
 
 
@@ -166,9 +167,10 @@ class Preprocessing:
     # Make these funcitonal
     X,Y = self.createTraining(noteArray)
     X,Y = self.transformIndexing(X,Y)
+
+    # to be accessed from getyData
     self.pitches_X = self.binaryVectorization(X)
     self.pitches_Y = self.binaryVectorization(Y)
-
 
 
   def getData(self):
@@ -177,5 +179,5 @@ class Preprocessing:
     # setData must be called before getData.
     # self.createTraining(noteArray)
     # self.transformIndexing()
-    self.shufflePitchesandSplit()
-    return self.train_x, self.train_y, self.test_x,self.test_y
+    train_x, train_y, test_x, test_y = self.shufflePitchesandSplit(self.pitches_X, self.pitches_Y)
+    return train_x, train_y, test_x, test_y
