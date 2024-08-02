@@ -8,11 +8,11 @@ def main():
     print(":)")
     engine = Model()
     preprocessor = Preprocessing()
-    preprocessor.setData(num_songs=0,midi_path=CHOPIN_DATA)
+    preprocessor.setData(num_songs=10,midi_path=None)
 
     engine.setUpParameters()
     engine.countParameters()
-    engine.trainModel(preprocessor,epochs=100)
+    engine.trainModel(preprocessor,epochs=100,verbose=True)
 
 
 if __name__ == "__main__":

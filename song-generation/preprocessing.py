@@ -20,7 +20,7 @@ TRAIN_TEST_SPLIT = 0.8
 
 # TESTING_MIDI_PATH = os.path.join("data","mozart-sonata.mid")
 TESTING_MIDI_PATH = os.path.join("data","EtudeChopin.mid")
-DATASET_PATH = None
+DATASET_PATH = "maestro"
 
 
 
@@ -29,7 +29,7 @@ class Preprocessing:
   train_y = []
 
 
-  def convertFromMidiDataset(num_songs):
+  def convertFromMidiDataset(self,num_songs):
     ## returns  array of type MadeNote from midi file
     ## MadeNote is tuple with pitch: int and duration: float
     song_count = 0
@@ -160,7 +160,7 @@ class Preprocessing:
 
   def setData(self,num_songs,midi_path=None):
     if midi_path is None:
-      noteArray = self.convertFromMidiDataset(DATASET_PATH,num_songs)
+      noteArray = self.convertFromMidiDataset(num_songs)
     else:
       noteArray = self.convertFromMidiPath(midi_path) # MIDI path used for dev
     # Make these funcitonal

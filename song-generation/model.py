@@ -63,7 +63,7 @@ class Model:
         logits = BatchNorm3
         return logits
 
-    def trainModel(self, preprocessor, epochs: int):
+    def trainModel(self, preprocessor, epochs: int,verbose = False):
 
         pitches_train_x, pitches_train_y, pitches_test_x, pitches_test_y = preprocessor.getData()
         assert len(pitches_train_x) == len(pitches_train_y) and len(pitches_test_x == len(pitches_test_y))
@@ -72,8 +72,8 @@ class Model:
 
 
 
-        num_batches = math.floor(pitches_train_x.size()[0] / BATCH_SIZE)
-        # num_batches = 1 ## overfitting on batch
+        # num_batches = math.floor(pitches_train_x.size()[0] / BATCH_SIZE)
+        num_batches = 1 ## overfitting on batch
 
         train_losses = []
         val_losses = []
@@ -82,6 +82,8 @@ class Model:
             for i in range(num_batches):
                 batch_start = i * BATCH_SIZE
                 batch_end = batch_start + BATCH_SIZE
+                print(batch_start)
+                print(batch_end)
                 ## forward pass:
                 constant_x_batch = pitches_train_x[batch_start:batch_end].int()
                 constant_y_batch = pitches_train_y[batch_start:batch_end].int()
@@ -108,11 +110,33 @@ class Model:
             validation_loss = functional.cross_entropy(logits,pitches_test_y.long())
             val_losses.append(validation_loss.item())
 
+            if (verbose):
+                print(f"For epoch {epoch + 1}:")
+                print(f"Training loss: {loss.item()}")
+                print(f"Validation loss: {validation_loss.item()}")
+
 
         print("Best training loss: ",min(train_losses) )
         print("Best validation loss: ", min(val_losses))
 
         self.plotTrainingValidationLossCurve(train_losses,"Training loss",val_losses,"Validation loss")
+
+
+    def generateNotes(self,noteCount):
+        noteArray = []
+        prevNote =  torch.zeros((8), dtype=torch.int)
+        prevNote[7] = 1
+        while len(noteArray) < noteCount:
+            curBatch = torch.zeros((16,8), dtype=torch.int)
+            curBatch[0] = prevNote
+            logits = self.make_predictions(curBatch)
+            probs = torch.nn.functional.softmax(logits)
+            _, generatedNotes = torch.topk(probs, k=1, dim=-1)
+            newNote = generatedNotes[0]
+            noteArray.append(newNote)
+            prevNote = torch.cat((prevNote[1:], newNote))
+
+        return noteArray
 
     def plotTrainingValidationLossCurve(self,train_loss,train_label,test_loss,test_label):
         plt.subplot(1,2,1)
