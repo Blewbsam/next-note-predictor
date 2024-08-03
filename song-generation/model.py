@@ -18,7 +18,7 @@ class Model:
 
     def setUpParameters(self):
         self.C = torch.randn((NUM_PITCHES,1),requires_grad=True)
-        self.W1 = torch.randn((89,100),requires_grad=True)
+        self.W1 = torch.randn((8,100),requires_grad=True)
         self.b1 = torch.randn(100,requires_grad=True)
         self.bnGain1 = torch.ones((1,100),requires_grad=True)
         self.bnBias1 = torch.zeros((1,100),requires_grad=True)
@@ -122,7 +122,10 @@ class Model:
         self.plotTrainingValidationLossCurve(train_losses,"Training loss",val_losses,"Validation loss")
 
 
-    def generateNotes(self,noteCount):
+
+    # inspired by https://github.com/karpathy/makemore/blob/master/makemore.py
+    #  could add sampling instead. 
+    def generateNotes(self,noteCount, distributiveSampling = True):
         noteArray = []
         prevNote =  torch.zeros((8), dtype=torch.int)
         prevNote[7] = 1
@@ -131,9 +134,12 @@ class Model:
             curBatch[0] = prevNote
             logits = self.make_predictions(curBatch)
             probs = torch.nn.functional.softmax(logits)
-            _, generatedNotes = torch.topk(probs, k=1, dim=-1)
+            if distributiveSampling:
+                generatedNotes = torch.multinomial(probs,num_samples=1)
+            else:   
+                _, generatedNotes = torch.topk(probs, k=1, dim=-1)
             newNote = generatedNotes[0]
-            noteArray.append(newNote)
+            noteArray.append(newNote.item())
             prevNote = torch.cat((prevNote[1:], newNote))
 
         return noteArray

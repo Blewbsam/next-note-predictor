@@ -168,8 +168,8 @@ class Preprocessing:
     X,Y = self.transformIndexing(X,Y)
 
     # to be accessed from getyData
-    self.pitches_X = self.binaryVectorization(X)
-    self.pitches_Y = self.binaryVectorization(Y)
+    self.pitches_X = X
+    self.pitches_Y = Y
 
 
   def getData(self):
